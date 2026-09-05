@@ -85,10 +85,6 @@ FinanceDoctor is **not merely a chatbot over financial data**. It separates:
   repair retries, and deterministic-template fallback exist so the system
   degrades gracefully instead of hallucinating. Deterministic model behavior
   is never claimed.
-* **MiniMax Speech 2.8: NOT AVAILABLE through the current GMI Cloud endpoint.**
-  GMI was verified to expose no TTS route (HTTP 404) and no audio models, so
-  spoken answers use the stub/demo audio path. Voice input was never offered
-  (no verified speech-to-text endpoint exists) and is not faked.
 
 ## Razorpay: transparent demo mode
 
