@@ -20,6 +20,8 @@ const CHECK_TITLES: Record<string, string> = {
 export function SafetySection({ policy }: { policy: PolicyView }) {
   const statusTone = policy.decision === 'REJECTED' ? 'danger' : 'success'
   const blocked = policy.decision === 'REJECTED' || policy.failed_checks.length > 0
+  const passed = policy.checks.filter((c) => c.status === 'PASS').length
+  const total = policy.checks.length
   return (
     <Section
       kicker="Stage 4 — deterministic policy engine"
@@ -28,6 +30,17 @@ export function SafetySection({ policy }: { policy: PolicyView }) {
       status={blocked ? 'rejected' : 'passed'}
       statusTone={statusTone}
     >
+      <div className="policyStrip">
+        <div className="policyStrip__left">
+          <span className="policyStrip__kicker">Deterministic verdict</span>
+          <span className="policyStrip__decision">
+            {blocked ? 'Blocked by policy' : `${passed} / ${total} checks passed`}
+          </span>
+        </div>
+        <span className="policyStrip__rule">
+          AI recommends · system validates · human decides
+        </span>
+      </div>
       <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
         <StatusBadge tone={blocked ? 'danger' : 'success'}>
           {blocked ? 'Blocked' : 'All checks passed'}
@@ -36,7 +49,7 @@ export function SafetySection({ policy }: { policy: PolicyView }) {
           Decision: <strong>{policy.decision.replaceAll('_', ' ')}</strong>
         </span>
       </div>
-      <div className="policyList">
+      <div className="policyList policyList--grid">
         {policy.checks.map((c) => {
           const failed = c.status === 'FAIL'
           return (

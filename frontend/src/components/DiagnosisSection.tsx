@@ -21,21 +21,32 @@ export function DiagnosisSection({ diagnosis }: { diagnosis: DiagnosisView }) {
       status="complete"
       statusTone="success"
     >
-      <div className="statGrid statGrid--3" style={{ marginBottom: 16 }}>
-        <DiagnosisStat
-          label="Leading diagnosis"
-          value={diagnosis.leading_hypothesis.replaceAll('_', ' ')}
-          strong
-        />
-        <DiagnosisStat label="Confidence" value={conf.label} tone={conf.tone} />
-        <DiagnosisStat
-          label="Recommended action"
-          value={diagnosis.recommended_action_type.replaceAll('_', ' ')}
-          mono
-        />
+      <div className="dxFeature">
+        <div className="dxFeature__eyebrow">Leading diagnosis</div>
+        <div className="dxFeature__value">
+          {diagnosis.leading_hypothesis.replaceAll('_', ' ')}
+        </div>
+        <div className="dxFeature__row">
+          <DiagnosisStat label="Confidence" value={conf.label} tone={conf.tone} light />
+          <DiagnosisStat
+            label="Recommended action"
+            value={diagnosis.recommended_action_type.replaceAll('_', ' ')}
+            mono
+            light
+          />
+        </div>
+        <p className="dxFeature__note">
+          Model-assessed confidence — the model&apos;s own assessment, not a
+          calibrated statistical probability.
+        </p>
       </div>
 
-      <p style={{ fontSize: 14, color: 'var(--text)', margin: '0 0 16px' }}>{diagnosis.summary}</p>
+      <p style={{ fontSize: 14, color: 'var(--text)', margin: '0 0 16px', maxWidth: 'var(--measure)' }}>{diagnosis.summary}</p>
+
+      <KeyEvidence
+        supporting={diagnosis.supporting_evidence_ids}
+        contradicting={diagnosis.contradicting_evidence_ids}
+      />
 
       <EvidenceExplorer evidence={diagnosis.evidence} />
 
@@ -61,22 +72,37 @@ function DiagnosisStat({
   tone,
   strong,
   mono,
+  light,
 }: {
   label: string
   value: string
   tone?: 'success' | 'info' | 'muted'
   strong?: boolean
   mono?: boolean
+  light?: boolean
 }) {
+  const valueColor = light
+    ? tone === 'success'
+      ? '#86efac'
+      : tone === 'info'
+        ? '#5eead4'
+        : '#f1f5f9'
+    : tone === 'success'
+      ? 'var(--success)'
+      : tone === 'info'
+        ? 'var(--accent)'
+        : 'var(--text)'
   return (
     <div>
-      <div className="stat__label">{label}</div>
+      <div className="stat__label" style={light ? { color: '#94a3b8' } : undefined}>
+        {label}
+      </div>
       <div
         style={{
           fontSize: strong ? 20 : 16,
           fontWeight: strong ? 700 : 600,
           marginTop: 3,
-          color: tone === 'success' ? 'var(--success)' : tone === 'info' ? 'var(--accent)' : 'var(--text)',
+          color: valueColor,
           fontFamily: mono ? 'var(--font-mono)' : undefined,
         }}
       >
@@ -121,6 +147,49 @@ function Differential({
       <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 8 }}>
         Relative evidence weighting considered by M3 before selecting the leading hypothesis.
         Scores are model-assessed, not statistical probabilities.
+      </p>
+    </div>
+  )
+}
+
+function shortEvidenceLabel(id: string): string {
+  const parts = id.split('.')
+  if (parts.length >= 3) {
+    return `${parts[1]} · ${parts.slice(2).join(' ').replaceAll('_', ' ')}`
+  }
+  if (parts.length === 2) {
+    return `${parts[0]} · ${parts[1].replaceAll('_', ' ')}`
+  }
+  return id.replaceAll('_', ' ')
+}
+
+function KeyEvidence({
+  supporting,
+  contradicting,
+}: {
+  supporting: string[]
+  contradicting: string[]
+}) {
+  if (!supporting.length && !contradicting.length) return null
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div className="card__kicker" style={{ marginBottom: 8 }}>
+        Key supporting evidence
+      </div>
+      <div className="worker__meta" style={{ marginTop: 0 }}>
+        {supporting.map((id) => (
+          <span className="tag tag--support" key={id} title={id}>
+            ✓ {shortEvidenceLabel(id)}
+          </span>
+        ))}
+        {contradicting.map((id) => (
+          <span className="tag tag--contradict" key={id} title={id}>
+            ⚠ {shortEvidenceLabel(id)} challenged
+          </span>
+        ))}
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 8, marginBottom: 0 }}>
+        Full deterministic records with baseline / current values are listed below.
       </p>
     </div>
   )

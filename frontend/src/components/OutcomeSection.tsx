@@ -19,6 +19,9 @@ export function OutcomeSection({
   demoMode?: boolean
 }) {
   const eff = outcome.effectiveness
+  const rate = outcome.conversion_rate ?? 0
+  const ringR = 34
+  const ringC = 2 * Math.PI * ringR
   return (
     <Section
       kicker="Stage 5 — measured outcome"
@@ -27,6 +30,35 @@ export function OutcomeSection({
       status={outcome.status}
       statusTone={outcomeTone(outcome.status)}
     >
+      <div className="payoff">
+        <svg
+          className="payoff__ring"
+          viewBox="0 0 84 84"
+          role="img"
+          aria-label={`Recovery conversion ${(rate * 100).toFixed(1)} percent`}
+        >
+          <circle cx="42" cy="42" r={ringR} className="payoff__track" />
+          <circle
+            cx="42"
+            cy="42"
+            r={ringR}
+            className="payoff__arc"
+            strokeDasharray={ringC}
+            strokeDashoffset={ringC * (1 - Math.min(1, Math.max(0, rate)))}
+          />
+          <text x="42" y="46" textAnchor="middle" className="payoff__count">
+            {outcome.targets_succeeded}/{outcome.targets_total}
+          </text>
+        </svg>
+        <div className="payoff__main">
+          <div className="payoff__eyebrow">Closed loop · measured outcome</div>
+          <div className="payoff__amount">{formatRupees(outcome.amount_recovered_minor)}</div>
+          <div className="payoff__sub">
+            Revenue recovered · {outcome.targets_succeeded} of {outcome.targets_total} targets
+            converted
+          </div>
+        </div>
+      </div>
       <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
         {demoMode ? <StatusBadge tone="demo">Demo simulation</StatusBadge> : null}
         {outcome.finalized ? (

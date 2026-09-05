@@ -66,7 +66,7 @@ export function TreatmentSection({
       <div className="card__kicker" style={{ marginBottom: 8 }}>
         Execution sequence
       </div>
-      <div className="policyList">
+      <div className="policyList policyList--rail">
         {steps.map((s) => (
           <div className="policyCheck policyCheck--pass" key={s.label}>
             <span className="policyCheck__icon" aria-hidden="true">

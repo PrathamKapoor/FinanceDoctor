@@ -23,21 +23,28 @@ export function InvestigationSection({ investigation }: { investigation: Investi
         one dimension. Workers never calculate financial metrics — they interpret and cite them.
       </p>
       <div className="workers">
-        {investigation.workers.map((w) => {
+        {investigation.workers.map((w, idx) => {
           const meta = WORKER_TITLES[w.worker] ?? { title: w.worker, short: '' }
           const errored = Boolean(w.error)
+          const unitNo = `W-0${idx + 1}`
           return (
             <div className="worker" key={w.worker}>
-              <div className="worker__head">
-                <span className="worker__name">{meta.title}</span>
-                <span>{errored ? '✗' : '✓'}</span>
+              <div className="worker__top">
+                <span className="worker__index" aria-hidden="true">{unitNo}</span>
+                <span
+                  className={`worker__state ${errored ? 'worker__state--error' : 'worker__state--done'}`}
+                >
+                  {errored ? '✕ Needs attention' : '✓ Analysis complete'}
+                </span>
               </div>
+              <div className="worker__name">{meta.title}</div>
               <div className="card__kicker">{meta.short}</div>
               <p className="worker__finding">
                 {errored ? w.error : w.finding}
               </p>
               <div className="worker__meta">
                 <span className="tag">confidence {formatRatio(w.confidence, 0)}</span>
+                <span className="tag">cites {w.evidence_ids.length} evidence</span>
                 {w.supports.map((h) => (
                   <span className="tag tag--support" key={`s-${h}`}>
                     + {h.replaceAll('_', ' ')}

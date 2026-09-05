@@ -24,14 +24,16 @@ export function JourneyStepper({ stages }: { stages: StageView[] }) {
               : stage.complete
                 ? 'stepper__item stepper__item--done'
                 : 'stepper__item'
+          const state = stage.active ? 'Active' : stage.complete ? 'Done' : 'Pending'
           return (
             <li key={stage.key} className={cls} title={stage.status ?? 'Not started'}>
-              <span className="stepper__node">
+              <span className="stepper__node" aria-hidden="true">
                 {stage.complete ? '✓' : meta.num || '·'}
               </span>
               <span>
                 {meta.num}. {meta.label}
               </span>
+              <span className="stepper__status">{state}</span>
             </li>
           )
         })}

@@ -33,6 +33,20 @@ export function ApprovalSection({
             A human must explicitly approve the exact immutable action before any Razorpay
             operation is executed.
           </p>
+          <ol className="approvalGate__steps">
+            <li>
+              <strong>AI recommended</strong>
+              <span>a bounded recovery treatment from the diagnosis</span>
+            </li>
+            <li>
+              <strong>Policy validated</strong>
+              <span>deterministic checks passed on an immutable snapshot</span>
+            </li>
+            <li>
+              <strong>You decide</strong>
+              <span>approve to authorize execution — or reject to stop it</span>
+            </li>
+          </ol>
           <div className="approvalGate__flow">
             AI reasons → policy constrains → <strong>human approves</strong> → Razorpay acts →
             system measures
